@@ -27,4 +27,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: inspirehep/rxiv-completness-check:${{ github.sha }}
+          tags: inspirehep/arxiv-completness-check:${{ github.sha }}
