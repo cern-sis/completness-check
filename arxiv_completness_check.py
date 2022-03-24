@@ -29,9 +29,9 @@ NEW_LINE_SYMBOL = "\n "
 
 class LiteratureSearch(Search):
     connection = connections.create_connection(
-        hosts=[os.environ["ES_HOST"]],
+        hosts=[os.environ["ELASTICSEARCH_HOST"]],
         timeout=30,
-        http_auth=(os.environ["ES_USERNAME"], os.environ["ES_PASSWORD"]),
+        http_auth=(os.environ["ELASTICSEARCH_USER"], os.environ["ELASTICSEARCH_PASSWORD"]),
         verify_certs=False,
         use_ssl=True,
     )
