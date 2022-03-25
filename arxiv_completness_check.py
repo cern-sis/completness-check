@@ -29,7 +29,7 @@ NEW_LINE_SYMBOL = "\n "
 
 class LiteratureSearch(Search):
     connection = connections.create_connection(
-        hosts=[f"{os.environ['ELASTICSEARCH_HOST']}/es"],
+        hosts=[f"https://{os.environ['ELASTICSEARCH_HOST']}/es"],
         timeout=30,
         http_auth=(os.environ["ELASTICSEARCH_USER"], os.environ["ELASTICSEARCH_PASSWORD"]),
         ca_certs="/etc/ssl/certs/ca-certificates.crt",
