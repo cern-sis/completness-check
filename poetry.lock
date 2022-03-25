@@ -46,7 +46,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "elasticsearch"
-version = "7.17.1"
+version = "7.13.4"
 description = "Python client for Elasticsearch"
 category = "main"
 optional = false
@@ -205,7 +205,7 @@ typing-extensions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b9827c58ab016296e4e6721f4ab3da9479ca0a7fce2f57ce24660d084c4037fd"
+content-hash = "fb497a0a92593f0d12c1a36412335f7a784803f660392b50200ae59d019a4f76"
 
 [metadata.files]
 certifi = [
@@ -228,8 +228,8 @@ distro = [
     {file = "distro-1.7.0.tar.gz", hash = "sha256:151aeccf60c216402932b52e40ee477a939f8d58898927378a02abbe852c1c39"},
 ]
 elasticsearch = [
-    {file = "elasticsearch-7.17.1-py2.py3-none-any.whl", hash = "sha256:8c79fe145f23826df144d1adc406a131e5cf3f41f302869fb5a1263b381e5ee2"},
-    {file = "elasticsearch-7.17.1.tar.gz", hash = "sha256:0061c49c3d4202802c09fba6734e48699a47cfeb737747acecc932ea73b7d318"},
+    {file = "elasticsearch-7.13.4-py2.py3-none-any.whl", hash = "sha256:5920df0ab2630778680376d86bea349dc99860977eec9b6d2bd0860f337313f2"},
+    {file = "elasticsearch-7.13.4.tar.gz", hash = "sha256:52dda85f76eeb85ec873bf9ffe0ba6849e544e591f66d4048a5e48016de268e0"},
 ]
 elasticsearch-dsl = [
     {file = "elasticsearch-dsl-7.4.0.tar.gz", hash = "sha256:c4a7b93882918a413b63bed54018a1685d7410ffd8facbc860ee7fd57f214a6d"},

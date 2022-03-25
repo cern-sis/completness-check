@@ -11,6 +11,7 @@ Sickle = "^0.7.0"
 requests = "^2.27.1"
 zulip = "^0.8.2"
 elasticsearch-dsl = "^7.4.0"
+elasticsearch = "<7.14.0"
 
 [tool.poetry.dev-dependencies]
 
