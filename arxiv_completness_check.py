@@ -22,7 +22,13 @@ CORE_CATEGORIES = [
     "physics:hep-th",
     "physics:quant-ph",
 ]
-YESTERDAY = date.today() - timedelta(1)
+
+TODAY = date.today()
+if TODAY.weekday() == 0:
+    DEFAULT_FROM_DATE = TODAY - timedelta(days=3)
+else:
+    DEFAULT_FROM_DATE = TODAY - timedelta(days=1)
+
 HEP_API_URL = "https://inspirehep.net/api/literature"
 NEW_LINE_SYMBOL = "\n "
 
@@ -77,7 +83,7 @@ def inspire_check(eprints):
     return found_eprints
 
 
-def holdingpen_check(eprints):
+def holdingpen_check(eprints, from_date):
     found_eprints = defaultdict(list)
     search = LiteratureSearch(index="holdingpen-hep")
     source_fields = ["id", "_workflow.status", "metadata.arxiv_eprints.value"]
@@ -85,7 +91,7 @@ def holdingpen_check(eprints):
         query = Q("match", metadata__arxiv_eprints__value=eprint) & Q(
             "range",
             metadata__acquisition_source__datetime={
-                "gt": YESTERDAY,
+                "gt": from_date,
                 "lte": date.today(),
             },
         )
@@ -153,11 +159,11 @@ def send_zulip_message(message):
 
 
 @click.command()
-@click.option("--from-date", default=YESTERDAY, required=True)
+@click.option("--from-date", default=DEFAULT_FROM_DATE, required=True)
 def completeness_check(from_date):
     check_start_date = datetime.now()
     eprints = fetch_arxiv_eprints(from_date)
-    eprints_on_holdingpen = holdingpen_check(eprints)
+    eprints_on_holdingpen = holdingpen_check(eprints, from_date)
     eprints_on_inspire = inspire_check(eprints)
     message = prepare_zulip_message(
         eprints, eprints_on_holdingpen, eprints_on_inspire, check_start_date, from_date

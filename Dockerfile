@@ -15,12 +15,7 @@ COPY CERN_Root_Certification_Authority_2.pem /usr/local/share/ca-certificates/CE
 RUN update-ca-certificates \
  && pip config set global.cert "${REQUESTS_CA_BUNDLE}"
 
-ARG POETRY_VERSION
-ENV POETRY_VERSION="${POETRY_VERSION:-1.1.6}"
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py \
-  | python - --version "${POETRY_VERSION}" \
- && poetry --version
-
+RUN pip install poetry==1.1.6
 
 COPY poetry.lock pyproject.toml ./
 COPY arxiv_completness_check.py ./
