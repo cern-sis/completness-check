@@ -1,19 +1,21 @@
 [tool.poetry]
-name = "inspire_arxiv_completness_check"
+name = "arxiv_completeness"
 version = "0.1.0"
-description = ""
-authors = ["MJedr <jedrych.marcysia@gmail.com>"]
+description = "A plugin that responds with a friendly hello."
+authors = ["rcs-sis-ts"]
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-click = "^8.0.4"
-Sickle = "^0.7.0"
-requests = "^2.27.1"
-zulip = "^0.8.2"
-elasticsearch-dsl = "^7.4.0"
-elasticsearch = "<7.14.0"
+python = "^3.6"
+errbot = "^6.1.0"
+Sickle = "0.7.0"
+opensearch-py = "2.7.1"
+
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.0"
+errbot-backend-test = "^6.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
