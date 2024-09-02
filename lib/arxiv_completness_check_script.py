@@ -3,13 +3,10 @@ import os
 import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from turtle import pd
 
-import click
 import requests
-import zulip
-from elasticsearch_dsl import Q, Search
-from elasticsearch_dsl.connections import connections
+from opensearchpy import Q, Search
+from opensearchpy.connection import connections
 from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch
 
@@ -35,10 +32,13 @@ NEW_LINE_SYMBOL = "\n "
 
 class LiteratureSearch(Search):
     connection = connections.create_connection(
-        hosts=[f"https://{os.environ['ELASTICSEARCH_HOST']}/es"],
+        hosts=[f"https://{os.environ['OPENSEARCH_INSPIRE_HOST']}/os"],
         timeout=30,
-        http_auth=(os.environ["ELASTICSEARCH_USER"], os.environ["ELASTICSEARCH_PASSWORD"]),
-        ca_certs="/etc/ssl/certs/ca-certificates.crt",
+        http_auth=(
+            os.environ["OPENSEARCH_INSPIRE_USER"],
+            os.environ["OPENSEARCH_INSPIRE_PASSWORD"],
+        ),
+        ca_certs="/home/errbot/certs/CERN_Root_Certification_Authority_2.pem",
     )
 
     def __init__(self, index, **kwargs):
@@ -52,10 +52,10 @@ def _get_identifier_value_from_arxiv_identifier(arxiv_identifier):
     return arxiv_identifier.identifier.split(":")[2]
 
 
-def fetch_arxiv_eprints(from_date):
+def fetch_arxiv_eprints(from_date, to_date):
     logging.info("Fetching new records from arXiv")
     sickle = Sickle("http://export.arxiv.org/oai2")
-    oaiargs = {"metadataPrefix": "oai_dc", "from": from_date}
+    oaiargs = {"metadataPrefix": "oai_dc", "from": from_date, "until": to_date}
 
     eprints = set()
     for category in CORE_CATEGORIES:
@@ -83,7 +83,7 @@ def inspire_check(eprints):
     return found_eprints
 
 
-def holdingpen_check(eprints, from_date):
+def holdingpen_check(eprints, from_date, to_date):
     found_eprints = defaultdict(list)
     search = LiteratureSearch(index="holdingpen-hep")
     source_fields = ["id", "_workflow.status", "metadata.arxiv_eprints.value"]
@@ -92,7 +92,7 @@ def holdingpen_check(eprints, from_date):
             "range",
             metadata__acquisition_source__datetime={
                 "gt": from_date,
-                "lte": date.today(),
+                "lte": to_date,
             },
         )
         result = search.query(query).params(size=1, _source=source_fields).execute()
@@ -113,8 +113,13 @@ def _fetch_inspire_record_by_api(eprint):
         return inspire_control_number_for_eprint
 
 
-def prepare_zulip_message(
-    arxiv_eprints, holdingpen_eprints, inspire_eprints, check_start_time, from_date
+def prepare_message(
+    arxiv_eprints,
+    holdingpen_eprints,
+    inspire_eprints,
+    check_start_time,
+    from_date,
+    to_date,
 ):
     workflows_in_error_state = holdingpen_eprints.get("ERROR", [])
     workflows_in_halted_state = holdingpen_eprints.get("HALTED", [])
@@ -129,15 +134,21 @@ def prepare_zulip_message(
     missing_article_info = (
         f"""
 :exclamation: Missing records for the following eprints:
-{NEW_LINE_SYMBOL.join(['* ' + emprint_number for emprint_number in missing_articles])}"""
+{NEW_LINE_SYMBOL.join(
+    ['* ' + emprint_number for emprint_number in missing_articles])}"""
         if missing_articles
         else "All eprints are on INSPIRE! :confetti:"
     )
 
-    message = f"""
+    message = (
+        f"""
 **ArXiv Harvest Check** started at {check_start_time}.
-Summary:
-* **{len(arxiv_eprints)}** eprints published by ArXiv since {from_date}, **{number_of_holdingpen_matches}** received in total, **{len(inspire_eprints)}** in INSPIRE.
+Summary:\n"""
+        + f"* **{len(arxiv_eprints)}** eprints published by"
+        f" ArXiv from {from_date} to {to_date}, "
+        f"**{number_of_holdingpen_matches}**"
+        f" received in total, **{len(inspire_eprints)}** in INSPIRE."
+        + f"""
 
 {missing_article_info}
 
@@ -148,28 +159,25 @@ Matched eprints on Holdingpen:
 - **{len(workflows_in_waiting_state)}** corresponding workflows in Waiting state,
 - **{len(workflows_in_initial_state)}** corresponding workflows in Initial state.
     """
+    )
     return message
 
 
-def send_zulip_message(message):
-    client = zulip.Client()
-    client.send_message(
-        {"type": "stream", "to": "inspire", "subject": "harvest", "content": message}
-    )
-
-
-@click.command()
-@click.option("--from-date", default=DEFAULT_FROM_DATE, required=True)
-def completeness_check(from_date):
+def completeness_check(from_date, to_date):
     check_start_date = datetime.now()
-    eprints = fetch_arxiv_eprints(from_date)
-    eprints_on_holdingpen = holdingpen_check(eprints, from_date)
+    eprints = fetch_arxiv_eprints(from_date, to_date)
+    eprints_on_holdingpen = holdingpen_check(eprints, from_date, to_date)
     eprints_on_inspire = inspire_check(eprints)
-    message = prepare_zulip_message(
-        eprints, eprints_on_holdingpen, eprints_on_inspire, check_start_date, from_date
+    message = prepare_message(
+        eprints,
+        eprints_on_holdingpen,
+        eprints_on_inspire,
+        check_start_date,
+        from_date,
+        to_date,
     )
-    send_zulip_message(message)
+    return message
 
 
 if __name__ == "__main__":
-    completeness_check()
+    completeness_check(DEFAULT_FROM_DATE, TODAY)

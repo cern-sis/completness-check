@@ -1,0 +1,9 @@
+[Core]
+Name = ArxivCompleteness
+Module = arxiv_completeness
+
+[Documentation]
+Description = This will warn us about the arxiv completeness
+
+[Python]
+Version = 3
