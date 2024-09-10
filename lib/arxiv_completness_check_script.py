@@ -38,7 +38,7 @@ class LiteratureSearch(Search):
             os.environ["OPENSEARCH_INSPIRE_USER"],
             os.environ["OPENSEARCH_INSPIRE_PASSWORD"],
         ),
-        ca_certs="/etc/ssl/certs/ca-certificates.crt",
+        ca_certs="/home/errbot/certs/CERN_Root_Certification_Authority_2.pem",
     )
 
     def __init__(self, index, **kwargs):
