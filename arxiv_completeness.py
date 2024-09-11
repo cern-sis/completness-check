@@ -17,7 +17,7 @@ class ArxivCompleteness(BotPlugin):
 
     """
 
-    @arg_botcmd("--from-date", dest="from_date", type=str, unpack_args=False, default=None)
+    @arg_botcmd("--from-date", dest="from_date", type=str, default=None)
     @arg_botcmd("--to-date", dest="to_date", type=str, default=None)
     def arxiv(self, msg, from_date, to_date):
         """
@@ -32,8 +32,5 @@ class ArxivCompleteness(BotPlugin):
         else:
             to_date = TODAY
 
-
         yield "Arxiv Completeness Check may take some time, please be patient"
-        yield arxiv_completness_check_script.completeness_check(
-            from_date, to_date
-        )
+        yield arxiv_completness_check_script.completeness_check(from_date, to_date)
