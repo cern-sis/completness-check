@@ -145,7 +145,7 @@ def prepare_message(
 **ArXiv Harvest Check** started at {check_start_time}.
 Summary:\n"""
         + f"* **{len(arxiv_eprints)}** eprints published by"
-        f" ArXiv from {from_date} to {to_date},"
+        f" ArXiv from {from_date} to {to_date}, "
         f"**{number_of_holdingpen_matches}**"
         f" received in total, **{len(inspire_eprints)}** in INSPIRE."
         + f"""
