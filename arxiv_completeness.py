@@ -33,11 +33,11 @@ class ArxivCompleteness(CrontabMixin, BotPlugin):
         Command that retrieves information regarding the harvesting between two dates
         """
         if from_date is not None:
-            from_date = datetime.strptime(from_date, "%d-%m-%Y").date()
+            from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
         else:
             from_date = get_default_from_date()
         if to_date is not None:
-            to_date = datetime.strptime(to_date, "%d-%m-%Y").date()
+            to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
         else:
             to_date = date.today()
 
