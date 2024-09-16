@@ -10,7 +10,8 @@ from opensearchpy.connection import connections
 from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.basicConfig(level=logging.INFO)
 
 CORE_CATEGORIES = [
     "physics:hep-lat",
@@ -53,7 +54,7 @@ def _get_identifier_value_from_arxiv_identifier(arxiv_identifier):
 
 
 def fetch_arxiv_eprints(from_date, to_date):
-    logging.info("Fetching new records from arXiv")
+    logger.info("Fetching new records from arXiv")
     sickle = Sickle("http://export.arxiv.org/oai2")
     oaiargs = {"metadataPrefix": "oai_dc", "from": from_date, "until": to_date}
 
@@ -70,7 +71,7 @@ def fetch_arxiv_eprints(from_date, to_date):
         except NoRecordsMatch:
             continue
 
-    logging.info(f"Fetched {str(len(eprints))} eprints")
+    logger.info(f"Fetched {str(len(eprints))} eprints")
     return eprints
 
 

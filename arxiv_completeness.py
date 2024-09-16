@@ -1,9 +1,13 @@
 from datetime import date, datetime, timedelta
+import logging
 
 from errbot import BotPlugin, arg_botcmd
 from errcron import CrontabMixin
 
 from lib import arxiv_completness_check_script
+
+logger = logging.getLogger(__name__)
+logger.basicConfig(level=logging.INFO)
 
 TODAY = date.today()
 if TODAY.weekday() == 0:
@@ -24,7 +28,7 @@ class ArxivCompleteness(CrontabMixin, BotPlugin):
 
     """
 
-    CRONTAB = [" 0 10 * * 1-5 .daily_check"]
+    CRONTAB = ["0 10 * * 1-5 .daily_check"]
 
     @arg_botcmd("--from-date", dest="from_date", type=str, default=None)
     @arg_botcmd("--to-date", dest="to_date", type=str, default=None)
@@ -47,9 +51,12 @@ class ArxivCompleteness(CrontabMixin, BotPlugin):
     def daily_check(self, polled_time):
         client = self._bot.client
 
+        logging.info("Daily Check Start")
+
         message = arxiv_completness_check_script.completeness_check(
             get_default_from_date(), date.today()
         )
+        logging.info(message)
 
         client.send_message(
             {
