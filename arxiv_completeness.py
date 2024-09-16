@@ -29,6 +29,7 @@ class ArxivCompleteness(CrontabMixin, BotPlugin):
     """
 
     CRONTAB = ["0 10 * * 1-5 .daily_check"]
+    TIMEZONE = "Europe/Zurich"
 
     @arg_botcmd("--from-date", dest="from_date", type=str, default=None)
     @arg_botcmd("--to-date", dest="to_date", type=str, default=None)
