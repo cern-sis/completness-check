@@ -11,7 +11,7 @@ from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch
 
 logger = logging.getLogger(__name__)
-logger.basicConfig(level=logging.INFO)
+logger.setLevel(logging.INFO)
 
 CORE_CATEGORIES = [
     "physics:hep-lat",
