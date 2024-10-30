@@ -9,17 +9,11 @@ from lib import arxiv_completness_check_script
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-TODAY = date.today()
-if TODAY.weekday() == 0:
-    DEFAULT_FROM_DATE = TODAY - timedelta(days=3)
-else:
-    DEFAULT_FROM_DATE = TODAY - timedelta(days=1)
-
-
 def get_default_from_date():
-    if TODAY.weekday() == 0:
-        return TODAY - timedelta(days=3)
-    return TODAY - timedelta(days=1)
+    today = date.today()
+    if today.weekday() == 0:
+        return today - timedelta(days=3)
+    return today - timedelta(days=1)
 
 
 class ArxivCompleteness(CrontabMixin, BotPlugin):
